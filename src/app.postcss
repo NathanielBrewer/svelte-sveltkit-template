@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+@layer base {
+	html {
+		@apply bg-surface-50;
+	}
+
+	body {
+		@apply min-h-screen bg-surface-50 text-surface-900 antialiased;
+	}
+
+	:focus-visible {
+		@apply outline outline-2 outline-offset-2 outline-primary-500;
+	}
+}
