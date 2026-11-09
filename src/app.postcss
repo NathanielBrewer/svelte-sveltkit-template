@@ -16,3 +16,26 @@
 		@apply outline outline-2 outline-offset-2 outline-primary-500;
 	}
 }
+
+/* Keep the template's action variants readable at normal text sizes. */
+@layer utilities {
+	.variant-filled-primary {
+		@apply bg-primary-600;
+	}
+
+	.variant-filled-primary:hover {
+		@apply bg-primary-700;
+	}
+
+	.variant-soft-secondary {
+		@apply text-secondary-800;
+	}
+
+	.variant-soft-success {
+		@apply text-success-800;
+	}
+
+	.variant-soft-warning {
+		@apply text-warning-800;
+	}
+}

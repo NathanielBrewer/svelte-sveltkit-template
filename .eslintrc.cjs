@@ -1,7 +1,7 @@
 /** @type { import("eslint").Linter.Config } */
 module.exports = {
 	root: true,
-	ignorePatterns: ['build', '.svelte-kit', 'coverage', 'package'],
+	ignorePatterns: ['build', '.svelte-kit', 'coverage', 'package', 'artifacts'],
 	extends: [
 		'eslint:recommended',
 		'plugin:@typescript-eslint/recommended',

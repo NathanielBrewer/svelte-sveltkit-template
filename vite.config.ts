@@ -23,7 +23,7 @@ export default defineConfig({
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html'],
-			include: ['src/**/*.{svelte,ts}'],
+			include: ['src/**/*.{svelte,ts}', 'scripts/accessibility/source-controls.mjs'],
 			exclude: ['src/app.d.ts', 'src/lib/index.ts', 'src/routes/+layout.svelte'],
 			thresholds: {
 				statements: 80,

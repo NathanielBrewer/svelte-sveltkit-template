@@ -1,4 +1,5 @@
 build
 .svelte-kit
 coverage
+artifacts
 package

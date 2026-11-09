@@ -17,10 +17,12 @@ The cloned site content, routes, assets, and old deployment/test setup have been
 - `npm run preview` previews the production build
 - `npm run check` runs `svelte-check`
 - `npm run lint` runs Prettier and ESLint
-- `npm run test` runs unit tests once
+- `npm test` runs unit tests and the browser accessibility audit
+- `npm run test:unit` runs unit tests once
 - `npm run test:watch` runs unit tests in watch mode
 - `npm run test:coverage` runs unit tests with V8 coverage
-- `npm run validate` runs check, lint, and coverage together
+- `npm run test:accessibility` audits theme controls, routes, and navigation in Chromium
+- `npm run validate` runs check, lint, unit coverage, and accessibility together
 
 ## Structure
 
@@ -74,3 +76,13 @@ Unknown page and portfolio slugs return 404. Navigation and route content share 
 same configuration, so adding an entry also adds its link. This template uses local
 example data; Contentful clients, credentials, preview endpoints, branding, galleries,
 and contact submission services remain specific to the source project.
+
+## Accessibility
+
+The Pa11y/Chromium pipeline is adapted from `agent-orchestration`. It checks the real
+theme stylesheet, source-derived controls in default/hover states, and configured
+routes at desktop and mobile widths. Findings block validation and CI; reports and
+failure screenshots are saved in `artifacts/accessibility/`.
+
+See [Accessibility testing](docs/accessibility-testing.md) for setup, route/state
+configuration, diagnostics, CI behavior, and the manual checks that remain necessary.

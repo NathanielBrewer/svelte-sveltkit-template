@@ -72,7 +72,10 @@ describe('SiteNavigation', () => {
 			'false'
 		);
 		await fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
-		await fireEvent.click(screen.getByRole('link', { name: 'About' }));
+		const about = screen.getByRole('link', { name: 'About' });
+		// The component test checks dismissal; Chromium audits handle real route navigation.
+		about.addEventListener('click', (event) => event.preventDefault(), { once: true });
+		await fireEvent.click(about);
 		expect(screen.getByRole('button', { name: 'Open menu' }).getAttribute('aria-expanded')).toBe(
 			'false'
 		);

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Template accessibility fixture</title>
+		<link rel="stylesheet" href="/src/app.postcss" />
+	</head>
+	<body data-theme="template-theme">
+		<main class="mx-auto max-w-6xl space-y-6 p-6">
+			<h1 class="h1">Accessibility smoke test</h1>
+			<p class="text-surface-700">Supporting text on the template surface.</p>
+			<label for="example-name">Example name</label>
+			<input
+				class="input"
+				id="example-name"
+				name="example-name"
+				placeholder="Describe your project"
+			/>
+			<section aria-label="Theme controls" class="flex flex-wrap gap-4">
+				<button type="button" class="btn variant-filled-primary" data-contrast-check>
+					Primary action
+				</button>
+				<button type="button" class="btn variant-soft-secondary" data-contrast-check>
+					Secondary action
+				</button>
+				<button type="button" class="btn variant-soft-surface" data-contrast-check>
+					Surface action
+				</button>
+				<button type="button" class="btn variant-soft-success" data-contrast-check>
+					Success action
+				</button>
+				<button type="button" class="btn variant-soft-warning" data-contrast-check>
+					Warning action
+				</button>
+				<button type="button" class="btn variant-soft-error" data-contrast-check>
+					Error action
+				</button>
+			</section>
+			<section
+				id="generated-controls"
+				aria-label="Generated application controls"
+				class="flex flex-wrap gap-4"
+			></section>
+		</main>
+	</body>
+</html>
