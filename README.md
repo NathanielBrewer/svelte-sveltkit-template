@@ -51,3 +51,26 @@ Vite 8's default Lightning CSS minifier rejects.
 The full audit currently reports four low-severity entries from the Svelte Vite plugin's
 `deepmerge` dependency ([GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4)).
 There is no patched upstream release; keep this finding visible until a fix is available.
+
+## Routing and navigation
+
+The sticky header, desktop dropdown, mobile menu, and active-route styling are adapted
+from `mike-erb-website`. `src/lib/components/SiteNavigation.svelte` uses one shared link
+list for both layouts, with Escape/focus restoration and outside-click dismissal.
+It follows SvelteKit's current URL, including browser back/forward navigation.
+
+Edit `src/lib/site.ts` to configure the brand-neutral example pages, portfolios, and
+navigation order. The header brand and home URL are component props in `+layout.svelte`.
+Dropdowns support one level of child links; include an overview link in the children
+when the parent also has a landing page.
+
+- `/` keeps the template landing page.
+- `/portfolios` lists configured portfolios.
+- `/portfolio/[portfolioSlug]` loads a configured portfolio.
+- `/[pageSlug]` loads a configured page (initially `/about`).
+- `/contact` is a static placeholder, ready for your own contact details or form.
+
+Unknown page and portfolio slugs return 404. Navigation and route content share the
+same configuration, so adding an entry also adds its link. This template uses local
+example data; Contentful clients, credentials, preview endpoints, branding, galleries,
+and contact submission services remain specific to the source project.
