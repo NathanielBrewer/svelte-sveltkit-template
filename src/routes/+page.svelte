@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FeatureCard from '$lib/components/FeatureCard.svelte';
+	import FeatureCard from '#lib/components/FeatureCard.svelte';
 
 	type Feature = {
 		title: string;
@@ -58,7 +58,7 @@
 			</div>
 
 			<div class="flex flex-wrap gap-3">
-				<span class="badge variant-soft-surface">SvelteKit 2</span>
+				<span class="badge variant-soft-surface">SvelteKit 3</span>
 				<span class="badge variant-soft-surface">Skeleton theme tokens</span>
 				<span class="badge variant-soft-surface">Vitest + coverage</span>
 				<span class="badge variant-soft-surface">ESLint + Prettier</span>

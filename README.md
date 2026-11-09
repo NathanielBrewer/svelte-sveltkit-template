@@ -32,8 +32,22 @@ The cloned site content, routes, assets, and old deployment/test setup have been
 
 ## Start
 
+Use Node.js 22.17+ and commit `package-lock.json` with dependency updates.
+
 ```bash
-npm install
+npm ci
 npm run dev
 npm run validate
 ```
+
+After dependency updates, run `npm audit`, `npm run validate`, and `npm run build`.
+
+SvelteKit 3 configuration lives in `vite.config.ts`, and shared source imports use `#lib/*`.
+The scoped `minimatch` override keeps the TypeScript ESLint parser on a patched release;
+remove it when the parser's dependency range includes minimatch 11.0.1 or later.
+The build uses esbuild for CSS minification because Skeleton 2 includes selectors that
+Vite 8's default Lightning CSS minifier rejects.
+
+The full audit currently reports four low-severity entries from the Svelte Vite plugin's
+`deepmerge` dependency ([GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4)).
+There is no patched upstream release; keep this finding visible until a fix is available.
