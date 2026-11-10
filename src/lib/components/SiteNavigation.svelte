@@ -5,7 +5,7 @@
 		items,
 		pathname,
 		navigationKey = pathname,
-		brand = 'Starter template',
+		brand = __TEMPLATE_BRAND__,
 		homeHref = '/'
 	}: {
 		items: NavigationItem[];

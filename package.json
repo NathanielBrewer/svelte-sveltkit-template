@@ -17,9 +17,14 @@
 		"test:coverage": "vitest run --coverage",
 		"validate": "npm run check && npm run lint && npm run test:coverage && npm run test:accessibility",
 		"test:unit": "vitest run",
-		"test:accessibility": "node scripts/check-accessibility.mjs"
+		"test:accessibility": "node scripts/check-accessibility.mjs",
+		"test:e2e": "playwright test",
+		"check:build": "node scripts/check-build.mjs",
+		"validate:release": "npm run validate && npm run build && npm run test:e2e && npm run check:build",
+		"test:build-matrix": "node scripts/check-build-matrix.mjs"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.65.0",
 		"@skeletonlabs/skeleton": "2.11.0",
 		"@skeletonlabs/tw-plugin": "0.3.1",
 		"@sparticuz/chromium": "^153.0.0",
@@ -56,11 +61,15 @@
 	},
 	"imports": {
 		"#lib": "./src/lib/index.ts",
-		"#lib/*": "./src/lib/*"
+		"#lib/*": "./src/lib/*",
+		"#telemetry": "./src/lib/observability/disabled.ts"
 	},
 	"overrides": {
 		"@typescript-eslint/typescript-estree": {
 			"minimatch": "^11.0.1"
 		}
+	},
+	"dependencies": {
+		"@sentry/sveltekit": "^11.11.0"
 	}
 }

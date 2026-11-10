@@ -1,3 +1,4 @@
+import examples from 'virtual:template-content';
 import type { NavigationItem } from '#lib/navigation/navigation.ts';
 
 export const pages = [
@@ -17,6 +18,14 @@ export const portfolios = [
 ];
 
 export const navigation: NavigationItem[] = [
+	{
+		label: 'Explore',
+		href: '/explore',
+		children: [
+			{ label: 'All examples', href: '/explore' },
+			...examples.map((page) => ({ label: page.title, href: `/explore/${page.slug}` }))
+		]
+	},
 	{
 		label: 'Portfolios',
 		href: '/portfolios',

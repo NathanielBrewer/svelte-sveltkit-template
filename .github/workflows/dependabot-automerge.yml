@@ -1,0 +1,65 @@
+name: Dependabot auto-merge
+
+on:
+  workflow_run:
+    workflows: [Validate]
+    types: [completed]
+  schedule:
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Report eligible or blocked PRs without merging
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependabot-auto-merge
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    name: Check results and merge one Dependabot update
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (vars.DEPENDABOT_AUTO_MERGE == 'true' ||
+       (github.event_name == 'workflow_dispatch' && inputs.dry_run))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write # Read results; explicitly dispatch CI after a bot merge.
+
+    steps:
+      # workflow_run uses the default branch, never the triggering PR's code.
+      # No PR checkout, package install, build, or artifact execution in this job.
+      - name: Check out trusted automation
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: scripts
+
+      - name: Evaluate open PRs
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          AUTO_MERGE_ENABLED: ${{ vars.DEPENDABOT_AUTO_MERGE }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+        with:
+          script: |
+            const { runDependabotMerge } = await import(`${process.env.GITHUB_WORKSPACE}/scripts/dependabot-automerge.mjs`);
+            const results = await runDependabotMerge({
+              github,
+              repo: context.repo,
+              enabled: process.env.AUTO_MERGE_ENABLED === 'true',
+              dryRun: process.env.DRY_RUN === 'true',
+              log: message => core.info(message),
+            });
+            await core.summary
+              .addHeading('Dependabot merge decisions')
+              .addList(results.map(result => `PR #${result.number}: ${result.reason}`))
+              .write();

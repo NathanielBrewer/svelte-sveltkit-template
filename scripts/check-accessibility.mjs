@@ -10,6 +10,7 @@ import config from '../accessibility.config.mjs';
 import { sourceControlSamples } from './accessibility/source-controls.mjs';
 import { renderedContrastFailures } from './accessibility/rendered-contrast.mjs';
 
+process.env.TEMPLATE_ACCESSIBILITY = 'true';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const artifactRoot = resolve(root, 'artifacts/accessibility');
 const fixturePath = '/__accessibility-fixture';
@@ -23,28 +24,49 @@ const report = {
 let server;
 let browser;
 
-async function audit(page, url, label) {
-	const result = await pa11y(url, {
-		browser,
-		page,
-		viewport: page.viewport(),
-		ignoreUrl: true,
-		standard: 'WCAG2AA',
-		includeWarnings: true,
-		includeNotices: true,
-		timeout: 30_000
+async function settle(page) {
+	await page.evaluate(async () => {
+		await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+		await Promise.all(
+			document
+				.getAnimations()
+				.filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+				.map((animation) => animation.finished.catch(() => {}))
+		);
 	});
-	const errors = result.issues.filter((issue) => issue.type === 'error');
-	const entry = { label, url, issues: result.issues };
-	report.audits.push(entry);
-	for (const issue of errors)
-		console.error(`${label}: ${issue.code}: ${issue.message}\n  ${issue.selector}`);
-	if (errors.length) {
-		entry.screenshot = `${report.audits.length}-failure.png`;
-		await page.screenshot({
-			path: resolve(artifactRoot, entry.screenshot),
-			fullPage: true
+}
+
+async function audit(page, url, label) {
+	const themes = label.includes('px') ? config.themes : [null];
+	for (const theme of themes) {
+		if (theme) {
+			await page.mouse.move(0, 0);
+			await page.$eval('body', (body, theme) => (body.dataset.theme = theme), theme);
+		}
+		await settle(page);
+		const auditLabel = theme ? `${label} ${theme}` : label;
+		const result = await pa11y(url, {
+			browser,
+			page,
+			viewport: page.viewport(),
+			ignoreUrl: true,
+			standard: 'WCAG2AA',
+			includeWarnings: true,
+			includeNotices: true,
+			timeout: 30_000
 		});
+		const errors = result.issues.filter((issue) => issue.type === 'error');
+		const entry = { label: auditLabel, url, issues: result.issues };
+		report.audits.push(entry);
+		for (const issue of errors)
+			console.error(`${auditLabel}: ${issue.code}: ${issue.message}\n  ${issue.selector}`);
+		if (errors.length) {
+			entry.screenshot = `${report.audits.length}-failure.png`;
+			await page.screenshot({
+				path: resolve(artifactRoot, entry.screenshot),
+				fullPage: true
+			});
+		}
 	}
 }
 
@@ -161,28 +183,41 @@ try {
 				container.append(element);
 			}
 		}, samples);
-		await audit(page, fixtureUrl, 'theme fixture and source controls');
-		report.contrastFailures.push(
-			...(await renderedContrastFailures(page, '[data-contrast-check]', 'default'))
-		);
-		const controls = await page.$$('[data-contrast-check]');
-		report.contrastChecks = controls.length * 2;
-		for (const [index, control] of controls.entries()) {
+		for (const theme of config.themes) {
 			await page.mouse.move(0, 0);
-			await control.hover();
-			// Measure only the hovered control, including fixture and source-derived styles.
-			await control.evaluate((element) => element.setAttribute('data-hover-check', ''));
+			await page.$eval('body', (body, theme) => (body.dataset.theme = theme), theme);
+			await settle(page);
+			await audit(page, fixtureUrl, `${theme} fixture and source controls`);
+			if ((await page.$eval('body', (body) => body.dataset.theme)) !== theme) {
+				throw new Error('Fixture audit changed the selected theme');
+			}
 			report.contrastFailures.push(
-				...(await renderedContrastFailures(page, '[data-hover-check]', `hover:${index + 1}`))
+				...(await renderedContrastFailures(page, '[data-contrast-check]', `${theme}:default`))
 			);
-			await audit(page, fixtureUrl, `theme hover ${index + 1}`);
-			await control.evaluate((element) => element.removeAttribute('data-hover-check'));
-		}
-		if (report.contrastFailures.length) {
-			await page.screenshot({
-				path: resolve(artifactRoot, 'contrast-failure.png'),
-				fullPage: true
-			});
+			const controls = await page.$$('[data-contrast-check]');
+			report.contrastChecks = (report.contrastChecks || 0) + controls.length * 2;
+			for (const [index, control] of controls.entries()) {
+				await page.mouse.move(0, 0);
+				await control.hover();
+				await settle(page);
+				// Measure only the hovered control, including fixture and source-derived styles.
+				await control.evaluate((element) => element.setAttribute('data-hover-check', ''));
+				report.contrastFailures.push(
+					...(await renderedContrastFailures(
+						page,
+						'[data-hover-check]',
+						`${theme}:hover:${index + 1}`
+					))
+				);
+				await audit(page, fixtureUrl, `${theme} hover ${index + 1}`);
+				await control.evaluate((element) => element.removeAttribute('data-hover-check'));
+			}
+			if (report.contrastFailures.length) {
+				await page.screenshot({
+					path: resolve(artifactRoot, 'contrast-failure.png'),
+					fullPage: true
+				});
+			}
 		}
 
 		for (const viewport of config.viewports) {

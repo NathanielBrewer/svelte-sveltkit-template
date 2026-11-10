@@ -1,0 +1,65 @@
+# Alerts and security-update PRs must also be enabled in GitHub repository settings.
+version: 2
+updates:
+  # One npm application with a tracked package-lock.json.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'America/Halifax'
+    open-pull-requests-limit: 5
+    groups:
+      # Security fixes run independently of the weekly version-update schedule.
+      # Include all version levels so a required major fix is not filtered out.
+      security-fixes:
+        applies-to: 'security-updates'
+        patterns:
+          - '*'
+      # Keep the frontend framework, build tooling, and styling stack together.
+      frontend:
+        applies-to: 'version-updates'
+        patterns:
+          - '@sveltejs/*'
+          - 'svelte'
+          - 'svelte-check'
+          - 'vite'
+          - '@skeletonlabs/*'
+          - 'tailwindcss'
+          - 'postcss'
+          - 'autoprefixer'
+        update-types:
+          - 'minor'
+          - 'patch'
+      runtime:
+        applies-to: 'version-updates'
+        dependency-type: 'production'
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
+      # Shared tools such as TypeScript and Vitest update across the application.
+      development:
+        applies-to: 'version-updates'
+        dependency-type: 'development'
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
+    # Major upgrades remain separate PRs for manual compatibility review,
+    # especially Skeleton/Tailwind and TypeScript. Do not auto-merge them.
+    # No ignore rules: keep potentially necessary security upgrades visible.
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'America/Halifax'
+    groups:
+      actions:
+        patterns: ['*']

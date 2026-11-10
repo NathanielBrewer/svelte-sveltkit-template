@@ -1,88 +1,88 @@
-# Svelte Skeleton Template
+# SvelteKit application template
 
-Minimal SvelteKit starter built around:
-
-- SvelteKit
-- Skeleton with a single custom theme surface
-- TypeScript
-- ESLint + Prettier
-- Vitest + Testing Library + coverage
-
-The cloned site content, routes, assets, and old deployment/test setup have been removed so this repo behaves like a reusable template.
-
-## Scripts
-
-- `npm run dev` starts the local dev server
-- `npm run build` creates the production build
-- `npm run preview` previews the production build
-- `npm run check` runs `svelte-check`
-- `npm run lint` runs Prettier and ESLint
-- `npm test` runs unit tests and the browser accessibility audit
-- `npm run test:unit` runs unit tests once
-- `npm run test:watch` runs unit tests in watch mode
-- `npm run test:coverage` runs unit tests with V8 coverage
-- `npm run test:accessibility` audits theme controls, routes, and navigation in Chromium
-- `npm run validate` runs check, lint, unit coverage, and accessibility together
-
-## Structure
-
-- `app-theme.ts` is the main Skeleton theme token file
-- `tailwind.config.ts` wires Skeleton and Tailwind together
-- `src/app.postcss` is the small global styling layer
-- `src/routes/+page.svelte` is a starter landing page you can replace immediately
-- `src/lib/components/FeatureCard.svelte` is a small typed example component with unit tests
+A SvelteKit 3 / Svelte 5 starter with Skeleton theme presets, reusable content blocks,
+responsive navigation, structured logging, optional Sentry, and validation in Chromium.
+Source components and configuration are reviewed in [Source review](docs/source-review.md).
 
 ## Start
 
-Use Node.js 22.17+ and commit `package-lock.json` with dependency updates.
+Use Node.js 22.17+ or Node 24 as used by CI:
 
 ```bash
 npm ci
 npm run dev
-npm run validate
 ```
 
-After dependency updates, run `npm audit`, `npm run validate`, and `npm run build`.
+Edit `template.config.mjs` for the brand, default/available palettes, and selected
+example pages. The header's Style preset selector switches palettes and remembers
+valid preferences. See [Template configuration](docs/template-configuration.md) for
+content blocks, optional primitives, and controls over what enters the build.
 
-SvelteKit 3 configuration lives in `vite.config.ts`, and shared source imports use `#lib/*`.
+## Validation
+
+| Command                      | Purpose                                                               |
+| ---------------------------- | --------------------------------------------------------------------- |
+| `npm run check`              | Svelte and TypeScript diagnostics                                     |
+| `npm run lint`               | Formatting and ESLint                                                 |
+| `npm run test:unit`          | Unit/component and automation-policy tests                            |
+| `npm run test:coverage`      | Unit tests with enforced coverage thresholds                          |
+| `npm run test:accessibility` | Pa11y plus rendered contrast across configured palettes/routes/states |
+| `npm test`                   | Unit tests followed by accessibility                                  |
+| `npm run validate`           | Check, lint, coverage, and accessibility                              |
+| `npm run build`              | Production build                                                      |
+| `npm run test:e2e`           | Playwright against an already built production preview                |
+| `npm run check:build`        | Bundle exclusions and uncompressed client-size budget                 |
+| `npm run validate:release`   | Validate, build, production browser tests, and bundle check           |
+| `npm run test:build-matrix`  | Minimal, Sentry-enabled, and restored default builds                  |
+
+Chromium for accessibility is bundled. Playwright can use it too:
+
+```bash
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$(node --input-type=module -e 'import chromium from "@sparticuz/chromium"; console.log(await chromium.executablePath())')"
+npm run validate:release
+```
+
+Alternatively install Playwright Chromium with `npx playwright install chromium`.
+See [Accessibility testing](docs/accessibility-testing.md) for platform support,
+artifacts, route/state coverage and manual review. Run build/audit commands serially
+within a checkout.
+
+## Structure
+
+- `themes/presets.json` and `app-theme.ts` provide selected Skeleton palettes.
+- `content/pages.json` supplies the generalized example definitions.
+- `src/lib/content` contains the shared page shell and hero/plan/FAQ blocks.
+- `src/lib/components/SiteNavigation.svelte` supplies the sticky header, dropdowns,
+  mobile disclosure and active-route matching adapted from Mike Erb's site.
+- `src/lib/components/primitives` contains optional modal, status and notification UI.
+- `src/lib/observability` contains sanitized logging and optional Sentry adapters.
+- `scripts/template-options.mjs` emits only selected content and used block imports.
+
+`/` is the starter page; `/about`, `/contact`, `/portfolios`, and
+`/portfolio/[portfolioSlug]` retain simple examples configured in `src/lib/site.ts`.
+`/explore` lists selected definitions, and `/explore/[slug]` renders their blocks and
+section navigation. Unknown page/portfolio/content slugs return 404. Contact is a
+placeholder; there is no email provider or CMS dependency.
+
+SvelteKit configuration lives in `vite.config.ts`; shared source imports use `#lib/*`.
 The scoped `minimatch` override keeps the TypeScript ESLint parser on a patched release;
-remove it when the parser's dependency range includes minimatch 11.0.1 or later.
-The build uses esbuild for CSS minification because Skeleton 2 includes selectors that
-Vite 8's default Lightning CSS minifier rejects.
+remove it when the upstream range includes minimatch 11.0.1 or later. Esbuild handles
+CSS minification because Skeleton 2 selectors conflict with Lightning CSS defaults.
 
-The full audit currently reports four low-severity entries from the Svelte Vite plugin's
-`deepmerge` dependency ([GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4)).
-There is no patched upstream release; keep this finding visible until a fix is available.
+## Logging and CI
 
-## Routing and navigation
+[Logging and error reporting](docs/observability.md) explains structured logs,
+redaction, the optional `PUBLIC_SENTRY_DSN` build input, and live-delivery verification.
+No DSN means the Sentry SDK is excluded from production chunks. Error collection is
+separate from analytics, replay and performance tracing, which are not enabled here.
 
-The sticky header, desktop dropdown, mobile menu, and active-route styling are adapted
-from `mike-erb-website`. `src/lib/components/SiteNavigation.svelte` uses one shared link
-list for both layouts, with Escape/focus restoration and outside-click dismissal.
-It follows SvelteKit's current URL, including browser back/forward navigation.
+[Operate and repair CI](docs/ci-agent-runbook.md) explains connector permissions,
+commit/run matching, failure evidence, diagnosis and repairs, and Dependabot gates.
+The workflow validates and builds; it does not deploy or run an autonomous repair
+agent. Dependabot auto-merge requires a reviewed dry run and explicit repository
+opt-in. No remote repository settings have been changed by adding these files.
 
-Edit `src/lib/site.ts` to configure the brand-neutral example pages, portfolios, and
-navigation order. The header brand and home URL are component props in `+layout.svelte`.
-Dropdowns support one level of child links; include an overview link in the children
-when the parent also has a landing page.
-
-- `/` keeps the template landing page.
-- `/portfolios` lists configured portfolios.
-- `/portfolio/[portfolioSlug]` loads a configured portfolio.
-- `/[pageSlug]` loads a configured page (initially `/about`).
-- `/contact` is a static placeholder, ready for your own contact details or form.
-
-Unknown page and portfolio slugs return 404. Navigation and route content share the
-same configuration, so adding an entry also adds its link. This template uses local
-example data; Contentful clients, credentials, preview endpoints, branding, galleries,
-and contact submission services remain specific to the source project.
-
-## Accessibility
-
-The Pa11y/Chromium pipeline is adapted from `agent-orchestration`. It checks the real
-theme stylesheet, source-derived controls in default/hover states, and configured
-routes at desktop and mobile widths. Findings block validation and CI; reports and
-failure screenshots are saved in `artifacts/accessibility/`.
-
-See [Accessibility testing](docs/accessibility-testing.md) for setup, route/state
-configuration, diagnostics, CI behavior, and the manual checks that remain necessary.
+Commit `package-lock.json` with dependency updates. Run `npm audit` after updates.
+The current full audit has five low-severity entries stemming from one unpatched
+`deepmerge` advisory ([GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4)),
+including the SDK's inherited SvelteKit peer chain. These findings remain visible.

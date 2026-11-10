@@ -1,0 +1,93 @@
+[
+	{
+		"slug": "website-support",
+		"title": "Website support",
+		"description": "Example improvement and maintenance plans for a growing website.",
+		"blocks": [
+			{
+				"type": "hero",
+				"id": "overview",
+				"eyebrow": "Example offering",
+				"title": "Website support",
+				"summary": "Keep a useful website improving through clear, manageable plans. These are example offerings for this template.",
+				"actions": [{ "label": "Discuss your project", "href": "/contact" }]
+			},
+			{
+				"type": "plans",
+				"id": "plans",
+				"title": "Support plans",
+				"description": "Example plans; replace these details before publishing.",
+				"items": [
+					{
+						"id": "improvement",
+						"name": "Improvement",
+						"price": "$250/month",
+						"summary": "For websites that are actively evolving.",
+						"features": ["Planned improvements", "Monthly review", "Small feature development"]
+					},
+					{
+						"id": "maintenance",
+						"name": "Maintenance",
+						"price": "$50/month",
+						"summary": "For websites that already meet their goals.",
+						"features": [
+							"Security and dependency checks",
+							"Issue resolution",
+							"Small content changes"
+						]
+					}
+				]
+			},
+			{
+				"type": "faq",
+				"id": "questions",
+				"title": "Common questions",
+				"items": [
+					{
+						"question": "Can these blocks describe something other than services?",
+						"answer": "Yes. Use the same page definitions for products, memberships, project guides, or other structured content."
+					}
+				]
+			}
+		]
+	},
+	{
+		"slug": "team-support",
+		"title": "Small team support",
+		"description": "Example technical support plans for a small team.",
+		"blocks": [
+			{
+				"type": "hero",
+				"id": "overview",
+				"title": "Small team support",
+				"summary": "A second example showing the same reusable blocks with different content.",
+				"actions": [{ "label": "Get in touch", "href": "/contact" }]
+			},
+			{
+				"type": "plans",
+				"id": "plans",
+				"title": "Choose your plan",
+				"items": [
+					{
+						"id": "starter",
+						"name": "Starter",
+						"price": "$400/month",
+						"summary": "Support for straightforward systems.",
+						"features": ["Documentation", "Email and domain support", "Scheduled maintenance"]
+					},
+					{
+						"id": "partner",
+						"name": "Partner",
+						"price": "$800/month",
+						"summary": "Support when uptime matters.",
+						"features": [
+							"Monitoring and backup reviews",
+							"Incident coordination",
+							"Improvement roadmap"
+						]
+					}
+				]
+			}
+		]
+	}
+]

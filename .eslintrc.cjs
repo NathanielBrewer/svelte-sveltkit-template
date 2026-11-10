@@ -1,6 +1,12 @@
 /** @type { import("eslint").Linter.Config } */
 module.exports = {
 	root: true,
+	globals: {
+		__TEMPLATE_BRAND__: 'readonly',
+		__TEMPLATE_DEFAULT_THEME__: 'readonly',
+		__TEMPLATE_THEME_OPTIONS__: 'readonly',
+		__SENTRY_DSN__: 'readonly'
+	},
 	ignorePatterns: ['build', '.svelte-kit', 'coverage', 'package', 'artifacts'],
 	extends: [
 		'eslint:recommended',

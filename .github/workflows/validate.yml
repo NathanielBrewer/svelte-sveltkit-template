@@ -35,11 +35,26 @@ jobs:
         run: npm run validate
       - name: Build
         run: npm run build
-      - name: Upload accessibility evidence
+      - name: Configure Chromium
+        run: |
+          node --input-type=module <<'JS'
+          import chromium from '@sparticuz/chromium';
+          import { appendFileSync } from 'node:fs';
+          appendFileSync(process.env.GITHUB_ENV, `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=${await chromium.executablePath()}\n`);
+          JS
+      - name: Production browser tests
+        run: npm run test:e2e
+      - name: Check build contents
+        run: npm run check:build
+      - name: Check optional build matrix
+        run: npm run test:build-matrix
+      - name: Upload validation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: accessibility-report
-          path: artifacts/accessibility/
+          name: validation-evidence
+          path: |
+            artifacts/
+            coverage/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 7

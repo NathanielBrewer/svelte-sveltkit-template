@@ -53,7 +53,7 @@ The fixture is served by middleware only during this command. It is outside `sta
 
 ## Add routes and UI states
 
-Edit [`accessibility.config.mjs`](../accessibility.config.mjs) when adding/removing routes or changing navigation controls. The initial routes are `/`, `/about`, `/contact`, `/portfolios`, and `/portfolio/example`, at 1440 × 900 and 390 × 844. Use concrete paths for dynamic routes and create stable local data for them. A missing configured route fails rather than being treated as a skipped check.
+Edit [`accessibility.config.mjs`](../accessibility.config.mjs) when adding/removing routes or changing navigation controls. The initial routes include `/`, `/about`, `/contact`, `/portfolios`, `/portfolio/example`, `/explore`, and the selected `/explore/[slug]` definitions, at 1440 × 900 and 390 × 844. Every configured palette is checked for the fixture and real route states. Use concrete paths for dynamic routes and create stable local data for them. A missing configured route fails rather than being treated as a skipped check.
 
 The `navigation` selectors identify the mobile toggle and dropdown trigger on the home route. If your navigation interaction changes, update the scenario code in [`scripts/check-accessibility.mjs`](../scripts/check-accessibility.mjs). Add explicit scenarios for new dialogs, validation errors, expanded sections, and other important UI states; listing a route does not exercise every interaction on it.
 
@@ -65,11 +65,11 @@ The console identifies the audit state, WCAG rule, message, and CSS selector. Re
 
 Open `artifacts/accessibility/report.json` for the full issue list and self-test outcome. Pa11y failures include numbered screenshots; rendered contrast failures create `contrast-failure.png`. Each run replaces the previous report/screenshots. Artifacts are generated and ignored by Git, Prettier, and ESLint. Review warnings/notices even when the command succeeds; counts include repeated findings across states and viewports, rather than unique defects.
 
-Fix the component, accessible name/label, or shared theme style, then rerun the audit. Do not lower the threshold or hide a real failure just to pass. The initial adoption found a 3.68:1 primary button and soft secondary/success/warning controls below 4.5:1. Shared overrides in `src/app.postcss` now give the primary action a darker blue and the soft variants darker text, preserving their reusable class names.
+Fix the component, accessible name/label, or shared theme style, then rerun the audit. Do not lower the threshold or hide a real failure just to pass. The initial adoption found a 3.68:1 primary button and soft secondary/success/warning controls below 4.5:1. Shared overrides in `src/app.postcss` now give primary actions and links darker palette shades, white action text, and soft variants darker text, preserving their reusable class names.
 
 ## CI
 
-[`.github/workflows/validate.yml`](../.github/workflows/validate.yml) runs on pull requests, pushes to `main`, and manual dispatch. It installs the lockfile on Ubuntu/Node 24, runs `npm run validate`, then builds. Accessibility reports/screenshots are uploaded with `if: always()` and retained for 14 days. An audit failure fails the job; the workflow does not deploy the app.
+[`.github/workflows/validate.yml`](../.github/workflows/validate.yml) runs on pull requests, pushes to `main`, and manual dispatch. It installs the lockfile on Ubuntu/Node 24, runs `npm run validate`, then builds, runs production browser tests and bundle checks, and verifies optional build configurations. Reports/screenshots are uploaded as `validation-evidence` with `if: always()` and retained for seven days. An audit failure fails the job; the workflow does not deploy the app.
 
 ## Limits and manual review
 
@@ -77,4 +77,4 @@ This is automated WCAG2AA smoke testing, not a claim of complete WCAG conformanc
 
 Generated source samples reproduce global utility classes, not Svelte's component-scoped CSS or class directives. Real route scans cover the rendered navigation and other scoped components. The custom contrast calculation does not model image/gradient backgrounds, pseudo-elements, filters, whole-element opacity, or overlapping/backdrop layers. Review those combinations in the actual UI; its 4.5:1 threshold is deliberately conservative for all sampled text sizes.
 
-Continue keyboard and screen-reader reviews: tab order, visible focus, skip links, meaningful link text, dropdown Escape/focus restoration, reading order, zoom/reflow, and touch usability. Default/hover fixture checks do not replace testing focus, disabled, selected, error, and dark-theme states. The template currently uses a light theme; add explicit fixtures/scenarios before introducing dark mode.
+Continue keyboard and screen-reader reviews: tab order, visible focus, skip links, meaningful link text, dropdown Escape/focus restoration, reading order, zoom/reflow, and touch usability. Default/hover fixture checks do not replace testing focus, disabled, selected, error, and dark-theme states. The template currently uses light palettes; add explicit fixtures/scenarios before introducing dark mode.
