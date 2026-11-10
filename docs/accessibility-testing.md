@@ -47,6 +47,8 @@ Commands:
 5. Pa11y scans every configured route at every configured viewport. On `/`, it also scans an open dropdown on desktop and an open mobile menu and dropdown on mobile.
 6. Missing fixtures, stylesheets, routes, expected navigation controls, empty source sampling, browser errors, or audit failures produce a nonzero exit status.
 
+The contact route also exercises delivery-error and success states using intercepted requests, across both viewports and every selected palette. No actual form submission is sent.
+
 Pa11y errors and rendered contrast failures block validation. Pa11y warnings and notices are retained in the JSON report for manual review. No rule exclusions or ignored error baselines are configured.
 
 The fixture is served by middleware only during this command. It is outside `static/`, so it is not a public route in the production build.

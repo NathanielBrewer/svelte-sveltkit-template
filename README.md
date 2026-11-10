@@ -61,8 +61,9 @@ within a checkout.
 `/` is the starter page; `/about`, `/contact`, `/portfolios`, and
 `/portfolio/[portfolioSlug]` retain simple examples configured in `src/lib/site.ts`.
 `/explore` lists selected definitions, and `/explore/[slug]` renders their blocks and
-section navigation. Unknown page/portfolio/content slugs return 404. Contact is a
-placeholder; there is no email provider or CMS dependency.
+section navigation. Unknown page/portfolio/content slugs return 404. The contact form
+uses a private Netlify Forms delivery adapter. Follow [Contact and Netlify hosting](docs/contact-and-netlify.md)
+to enable detection, runtime configuration and notifications; delivery is disabled until configured.
 
 SvelteKit configuration lives in `vite.config.ts`; shared source imports use `#lib/*`.
 The scoped `minimatch` override keeps the TypeScript ESLint parser on a patched release;

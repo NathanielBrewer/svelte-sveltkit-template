@@ -56,3 +56,42 @@ test('direct routes and missing content return correct HTTP responses', async ({
 	for (const path of ['/missing', '/portfolio/missing', '/explore/missing'])
 		expect((await request.get(path)).status()).toBe(404);
 });
+
+test('contact validates, preserves a failed message, and resets after acceptance', async ({
+	page
+}) => {
+	const errors: string[] = [];
+	page.on('pageerror', (error) => errors.push(error.message));
+	await page.goto('/contact?contactSubject=Custom%20question');
+	await expect(page.getByLabel('Subject', { exact: true })).toHaveValue('Custom question');
+	await page.getByRole('button', { name: 'Send message' }).click();
+	await expect(page.getByLabel('Name', { exact: true })).toBeFocused();
+	await page.getByLabel('Name', { exact: true }).fill('Example');
+	await page.getByLabel('Email', { exact: true }).fill('person@example.test');
+	await page.getByLabel('Message', { exact: true }).fill('A sample question');
+	let attempt = 0;
+	await page.route('**/api/contact', async (route) => {
+		const body = route.request().postDataJSON();
+		expect(body.subject).toBe('Custom question');
+		expect(body.website).toBe('');
+		await route.fulfill({ status: attempt++ ? 200 : 502, json: { message: 'Example response' } });
+	});
+	await page.getByRole('button', { name: 'Send message' }).click();
+	await expect(page.getByRole('status')).toContainText('could not be sent');
+	await expect(page.getByLabel('Message', { exact: true })).toHaveValue('A sample question');
+	await page.getByRole('button', { name: 'Send message' }).click();
+	await expect(page.getByRole('status')).toContainText('Message received');
+	await expect(page.getByLabel('Message', { exact: true })).toHaveValue('');
+	await expect(page.getByLabel('Subject', { exact: true })).toHaveValue('Custom question');
+	expect(errors).toEqual([]);
+});
+
+test('unconfigured contact delivery fails explicitly in the production server', async ({
+	request
+}) => {
+	const result = await request.post('/api/contact', {
+		data: { name: 'Example', email: 'person@example.test', subject: 'Question', message: 'Hello' }
+	});
+	expect(result.status()).toBe(503);
+	expect((await result.json()).message).toContain('unavailable');
+});

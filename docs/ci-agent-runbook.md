@@ -38,7 +38,7 @@ There is no autonomous code-writing agent inside this Actions workflow. The work
 
 ## Validation stages and artifacts
 
-`Validate` installs the lockfile, runs typecheck/lint/unit coverage and the full palette accessibility matrix, builds, runs desktop/mobile Playwright tests against production preview, and checks build contents. It uploads `artifacts/` as `validation-evidence` for seven days, including on failure. A failed earlier stage prevents later stages from running; inspect which checks actually executed.
+`Validate` installs the lockfile, runs typecheck/lint/unit coverage and the full palette accessibility matrix, builds, runs desktop/mobile Playwright tests against production preview, and checks build contents, the published contact blueprint and generated Netlify function. See [Contact and Netlify hosting](contact-and-netlify.md) for deployment configuration and live-delivery checks. It uploads `artifacts/` as `validation-evidence` for seven days, including on failure. A failed earlier stage prevents later stages from running; inspect which checks actually executed.
 
 The build matrix runs after the main browser and contents checks. It checks optional code pruning and an SDK-enabled build without contacting a live Sentry project. Its finally step restores the regular build. The artifact also includes `coverage/`; with multiple upload roots, browser/accessibility/build reports remain under `artifacts/` inside the downloaded archive. No stage deploys or configures Sentry alerts. CI installation/launch errors must remain visible failures.
 

@@ -33,7 +33,7 @@ Run `npm run check:build` after building for a JSON size report and guards again
 
 `PageShell` renders the chosen blocks and derives an “On this page” navigation list from their IDs. Keep IDs unique and stable for anchor links. `/explore` and the main Explore dropdown derive their links from the same selected definitions. Unknown slugs return 404. A different data adapter can return the same serializable shape without changing the blocks. Strings render as text; no untrusted HTML renderer is included.
 
-The original `/about`, `/contact`, and portfolio examples remain in `src/lib/site.ts`. Add actual contact details or a tested form provider before publishing; this template does not send email.
+The original `/about`, `/contact`, and portfolio examples remain in `src/lib/site.ts`. The contact route uses the shared form and optional Netlify Forms backend. Follow [Contact and Netlify hosting](contact-and-netlify.md) to configure and verify delivery before publishing.
 
 ## Optional primitives
 

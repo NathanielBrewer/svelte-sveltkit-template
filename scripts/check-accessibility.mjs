@@ -226,6 +226,46 @@ try {
 				const url = new URL(route, origin).href;
 				await visit(page, url);
 				await audit(page, url, `${viewport.width}px ${route}`);
+				if (route === '/contact') {
+					let responseStatus = 503;
+					const intercept = (request) => {
+						if (new URL(request.url()).pathname === '/api/contact')
+							void request.respond({
+								status: responseStatus,
+								contentType: 'application/json',
+								body: JSON.stringify({ message: 'Test response' })
+							});
+						else void request.continue();
+					};
+					await page.setRequestInterception(true);
+					page.on('request', intercept);
+					try {
+						await page.evaluate(() => {
+							for (const [name, value] of Object.entries({
+								name: 'Example',
+								email: 'person@example.test',
+								message: 'Example question'
+							})) {
+								const field = document.querySelector(`.contact-form [name="${name}"]`);
+								field.value = value;
+								field.dispatchEvent(new Event('input', { bubbles: true }));
+							}
+							document.querySelector('.contact-form form').requestSubmit();
+						});
+						await page.waitForSelector('.contact-form [data-state="error"]');
+						await audit(page, url, `${viewport.width}px contact delivery error`);
+						// Pa11y removes request listeners during cleanup; restore our delivery mock.
+						page.off('request', intercept);
+						page.on('request', intercept);
+						responseStatus = 200;
+						await page.click('.contact-form button[type="submit"]');
+						await page.waitForSelector('.contact-form [data-state="success"]');
+						await audit(page, url, `${viewport.width}px contact delivery success`);
+					} finally {
+						page.off('request', intercept);
+						await page.setRequestInterception(false);
+					}
+				}
 				if (route === '/') {
 					const toggle = await page.$(config.navigation.mobileToggle);
 					if (!toggle) throw new Error('Mobile navigation toggle is missing');

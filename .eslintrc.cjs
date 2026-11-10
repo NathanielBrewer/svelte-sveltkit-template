@@ -7,7 +7,7 @@ module.exports = {
 		__TEMPLATE_THEME_OPTIONS__: 'readonly',
 		__SENTRY_DSN__: 'readonly'
 	},
-	ignorePatterns: ['build', '.svelte-kit', 'coverage', 'package', 'artifacts'],
+	ignorePatterns: ['build', '.svelte-kit', 'coverage', 'package', 'artifacts', '.netlify'],
 	extends: [
 		'eslint:recommended',
 		'plugin:@typescript-eslint/recommended',

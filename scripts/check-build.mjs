@@ -24,6 +24,25 @@ for (const path of chunks) {
 	if (path.includes('/client/')) clientBytes += Buffer.byteLength(body);
 }
 const failures = [];
+// Exercise the adapter's generated handler, not only Vite's generic preview.
+const blueprint = await readFile('build/contact-form.html', 'utf8');
+if (blueprint !== (await readFile('static/contact-form.html', 'utf8')))
+	failures.push('Netlify contact blueprint differs from source');
+const { default: handler } = await import('../.netlify/v1/functions/sveltekit-render.mjs');
+const context = { ip: '127.0.0.1' };
+const contact = await handler(new Request('https://example.test/contact'), context);
+if (contact.status !== 200 || !(await contact.text()).includes('Send message'))
+	failures.push('Netlify contact render failed');
+const invalid = await handler(
+	new Request('https://example.test/api/contact', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: '{}'
+	}),
+	context
+);
+if (invalid.status !== 400) failures.push('Netlify contact API validation failed');
+
 for (const id of Object.keys(palettes))
 	if (!config.themes.includes(id) && source.includes(`[data-theme=${id}]`))
 		failures.push(`Excluded theme is bundled: ${id}`);
@@ -44,5 +63,5 @@ await writeFile(
 );
 if (failures.length) throw new Error(failures.join('\n'));
 console.log(
-	`Build contents: ${clientBytes} client bytes; optional component and SDK checks passed`
+	`Build contents: ${clientBytes} client bytes; optional component, SDK, and Netlify handler checks passed`
 );
