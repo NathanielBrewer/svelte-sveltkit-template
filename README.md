@@ -1,8 +1,11 @@
-# SvelteKit application template
+# SvelteKit application template v2.0
 
 A SvelteKit 3 / Svelte 5 starter with Skeleton theme presets, reusable content blocks,
 responsive navigation, structured logging, optional Sentry, and validation in Chromium.
 Source components and configuration are reviewed in [Source review](docs/source-review.md).
+
+See the [v2.0.0 release notes](docs/releases/v2.0.0.md) for changes and migration
+requirements, and [Releasing](docs/releasing.md) for versioning and GitHub metadata.
 
 ## Start
 

@@ -1,8 +1,8 @@
 {
 	"name": "svelte-sveltekit-template",
-	"version": "0.1.0",
+	"version": "2.0.0",
 	"private": true,
-	"description": "Minimal SvelteKit template with Skeleton, TypeScript, linting, and Vitest coverage.",
+	"description": "SvelteKit 3 and Svelte 5 starter with switchable Skeleton themes, reusable content, accessibility and browser tests, optional Sentry, and Netlify Forms.",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -71,5 +71,24 @@
 	},
 	"dependencies": {
 		"@sentry/sveltekit": "^11.11.0"
-	}
+	},
+	"keywords": [
+		"svelte",
+		"sveltekit",
+		"svelte5",
+		"typescript",
+		"skeleton",
+		"tailwindcss",
+		"starter-template",
+		"theme-switcher",
+		"accessibility",
+		"pa11y",
+		"playwright",
+		"vitest",
+		"sentry",
+		"netlify",
+		"netlify-forms",
+		"github-actions",
+		"dependabot"
+	]
 }
