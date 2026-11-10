@@ -25,7 +25,7 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.65.0",
-		"@skeletonlabs/skeleton": "2.11.0",
+		"@skeletonlabs/skeleton": "5.0.1",
 		"@skeletonlabs/tw-plugin": "0.3.1",
 		"@sparticuz/chromium": "^153.0.0",
 		"@sveltejs/adapter-netlify": "^7.0.1",
